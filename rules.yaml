@@ -1,0 +1,8 @@
+lucid_newton:
+    - ip: 121.101.162.63
+      port: 5700
+    - ip: 121.101.162.63
+      port: 5701
+redis-test:
+    - ip: 121.101.162.63
+      port: 6379
