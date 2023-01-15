@@ -1,33 +1,44 @@
 package main
 
 import (
-	"DockerProtector/lib/docker"
-	"fmt"
-	"github.com/docker/docker/api/types/events"
+	"github.com/urfave/cli/v2"
+	"os"
 )
 
-func main() {
-	docker.Events(func(eventsMsg events.Message){
-		if eventsMsg.Type != "container" { return }
-		if eventsMsg.Status != "start" { return }
-		name := eventsMsg.Actor.Attributes["name"]
-		fmt.Println(name)
-		/*
-		// 不在规则表的不处理
-		if _, ok := rules.Rules[name]; !ok { return }
+var app *cli.App
 
-		rule := rules.Rules[name]
-		result, _ := rule.GetIptables()
-		fmt.Println(result)
-
-		ip = ips[name]
-		# 删除所有规则
-		delRules(ip)
-		# 根据规则表重新添加所有规则
-		addRules(ip, rules[name])
-		# 显示最新的规则
-		print( showRules(ip) )
-		 */
-	})
+func init() {
+	app = &cli.App{
+		Name: "DockerProtector",
+		Usage: "docker protector service",
+		Commands: []*cli.Command{
+			{
+				Name:  "cmd",
+				Usage: "command",
+				Action: Cmd,
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name:     "list",
+						Aliases:  []string{"l"},
+						Usage:    "显示容器的可访问IP的规则",
+					},
+					&cli.StringFlag{
+						Name:     "add",
+						Aliases:  []string{"a"},
+						Usage:    "添加容器的可访问IP规则",
+					},
+					&cli.StringFlag{
+						Name:     "remove",
+						Aliases:  []string{"r"},
+						Usage:    "删除容器的可访问IP规则",
+					},
+				},
+			},
+		},
+		Action: Service,
+	}
 }
 
+func main() {
+	_ = app.Run(os.Args)
+}
